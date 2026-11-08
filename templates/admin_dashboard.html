@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+
+{% block title %}Panel de Administración — Susurros de Papel{% endblock %}
+
+{% block content %}
+<main class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12 flex-grow w-full">
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
+        <div>
+            <h2 class="font-title text-3xl font-bold text-sepia-900">Panel de Control del Autor</h2>
+            <p class="text-sepia-700 text-sm">Administra, edita o elimina las publicaciones existentes.</p>
+        </div>
+        <a href="{{ url_for('create_work') }}" class="px-5 py-2.5 bg-accent-wine hover:bg-sepia-900 text-white text-sm font-medium rounded-xl transition-colors shadow-sm flex items-center justify-center gap-2 self-start sm:self-auto">
+            <i class="fa-solid fa-plus"></i> Publicar Nueva Obra
+        </a>
+    </div>
+
+    <div class="bg-white rounded-2xl border border-sepia-200 overflow-hidden shadow-sm">
+        <div class="overflow-x-auto">
+            <table class="w-full text-left text-sm text-sepia-800">
+                <thead class="bg-sepia-100 text-sepia-900 font-title text-xs uppercase tracking-wider border-b border-sepia-200">
+                    <tr>
+                        <th class="px-6 py-4">Título</th>
+                        <th class="px-6 py-4">Tipo</th>
+                        <th class="px-6 py-4">Fecha</th>
+                        <th class="px-6 py-4 text-center">Me Inspiró</th>
+                        <th class="px-6 py-4 text-right">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-sepia-100">
+                    {% for work in works %}
+                    <tr class="hover:bg-sepia-50/50 transition-colors">
+                        <td class="px-6 py-4">
+                            <div class="font-bold text-sepia-900">{{ work.title }}</div>
+                            <div class="text-xs text-sepia-700 font-handwriting">{{ work.subtitle }}</div>
+                        </td>
+                        <td class="px-6 py-4">
+                            <span class="px-2.5 py-1 rounded-full text-xs font-semibold 
+                                {% if work.type == 'poema' %}bg-amber-100 text-amber-900
+                                {% elif work.type == 'cuento' %}bg-emerald-100 text-emerald-900
+                                {% else %}bg-purple-100 text-purple-900{% endif %}">
+                                {{ work.category_label }}
+                            </span>
+                        </td>
+                        <td class="px-6 py-4 text-xs text-sepia-700">
+                            {{ work.created_at.strftime('%d %b %Y') }}
+                        </td>
+                        <td class="px-6 py-4 text-center text-xs font-semibold">
+                            <span class="text-accent-wine"><i class="fa-solid fa-heart mr-1 text-[10px]"></i>{{ work.likes }}</span>
+                        </td>
+                        <td class="px-6 py-4 text-right space-x-2">
+                            <a href="{{ url_for('edit_work', work_id=work.id) }}" class="inline-flex items-center px-3 py-1.5 rounded-lg border border-sepia-300 text-xs font-medium text-sepia-800 hover:bg-sepia-200 transition-colors">
+                                <i class="fa-solid fa-pen-to-square mr-1 text-[11px]"></i> Editar
+                            </a>
+                            <form action="{{ url_for('delete_work', work_id=work.id) }}" method="POST" class="inline" onsubmit="return confirm('¿Seguro que deseas eliminar este texto? Esta acción no se puede deshacer.');">
+                                <button type="submit" class="inline-flex items-center px-3 py-1.5 rounded-lg bg-rose-50 text-rose-700 border border-rose-200 text-xs font-medium hover:bg-rose-100 transition-colors">
+                                    <i class="fa-solid fa-trash mr-1 text-[11px]"></i> Eliminar
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="5" class="px-6 py-12 text-center text-sepia-700 italic">
+                            No hay publicaciones guardadas todavía.
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</main>
+{% endblock %}
