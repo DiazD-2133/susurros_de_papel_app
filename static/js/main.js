@@ -27,10 +27,18 @@ document.addEventListener('DOMContentLoaded', () => {
 function updateCounts() {
     const elTodos = document.getElementById('count-todos');
     if (!elTodos) return;
+    
+    const favorites = JSON.parse(localStorage.getItem('my_literary_favorites') || '[]');
+    
     elTodos.innerText = worksData.length;
     document.getElementById('count-poema').innerText = worksData.filter(w => w.type === 'poema').length;
     document.getElementById('count-cuento').innerText = worksData.filter(w => w.type === 'cuento').length;
     document.getElementById('count-reflexion').innerText = worksData.filter(w => w.type === 'reflexion').length;
+    
+    const countFav = document.getElementById('count-favoritos');
+    if (countFav) {
+        countFav.innerText = favorites.length;
+    }
 }
 
 function renderWorks(data) {
@@ -137,7 +145,6 @@ function applyFiltersAndSort() {
 
     const query = searchInput.value.toLowerCase();
     const sortBy = sortSelect.value;
-
     const favorites = JSON.parse(localStorage.getItem('my_literary_favorites') || '[]');
 
     let filtered = worksData.filter(item => {
@@ -153,14 +160,6 @@ function applyFiltersAndSort() {
         const matchesQuery = item.title.toLowerCase().includes(query) || 
                             item.excerpt.toLowerCase().includes(query) ||
                             item.content.toLowerCase().includes(query);
-        return matchesType && matchesQuery;
-    });
-
-    let filtered = worksData.filter(item => {
-        const matchesType = currentFilter === 'todos' || item.type === currentFilter;
-        const matchesQuery = item.title.toLowerCase().includes(query) || 
-                             item.excerpt.toLowerCase().includes(query) ||
-                             item.content.toLowerCase().includes(query);
         return matchesType && matchesQuery;
     });
 
@@ -198,9 +197,9 @@ function openReader(id) {
         contentContainer.innerHTML = work.content.split('\n\n').map(p => `<p>${p}</p>`).join('');
     }
 
-    /* favoritos */
+    /* Estado visual del marcapáginas */
     if (favorites.includes(String(id))) {
-    bookmarkIcon.className = "fa-solid fa-bookmark text-lg text-accent-wine";
+        bookmarkIcon.className = "fa-solid fa-bookmark text-lg text-accent-wine";
     } else {
         bookmarkIcon.className = "fa-regular fa-bookmark text-lg";
     }
@@ -248,16 +247,27 @@ function handleLike() {
 }
 
 function toggleBookmark() {
+    if (!currentWorkId) return;
+    
+    let favorites = JSON.parse(localStorage.getItem('my_literary_favorites') || '[]');
     const btn = document.getElementById('modal-bookmark-btn');
     const icon = btn.querySelector('i');
-    if (icon.classList.contains('fa-regular')) {
-        icon.classList.remove('fa-regular');
-        icon.classList.add('fa-solid', 'text-accent-wine');
+    const index = favorites.indexOf(String(currentWorkId));
+
+    if (index === -1) {
+        favorites.push(String(currentWorkId));
+        icon.className = "fa-solid fa-bookmark text-lg text-accent-wine";
         showToast('Guardado en tus lecturas favoritas');
     } else {
-        icon.classList.remove('fa-solid', 'text-accent-wine');
-        icon.classList.add('fa-regular');
+        favorites.splice(index, 1);
+        icon.className = "fa-regular fa-bookmark text-lg";
         showToast('Eliminado de favoritos');
+    }
+
+    localStorage.setItem('my_literary_favorites', JSON.stringify(favorites));
+    updateCounts();
+    if (currentFilter === 'favoritos') {
+        applyFiltersAndSort();
     }
 }
 
