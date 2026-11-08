@@ -1,4 +1,4 @@
-# Susurros de Papel — Con Sistema de Autenticación Admin
+# Habitaciones huérfanas — Con Sistema de Autenticación Admin
 
 Aplicación web literaria con backend Flask + SQLAlchemy y autenticación para administración (crear, editar, borrar).
 
