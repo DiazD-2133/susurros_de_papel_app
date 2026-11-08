@@ -5,6 +5,10 @@ let isAudioPlaying = false;
 let audioContext = null;
 let ambientOscillator = null;
 
+let ambientTrack = new Audio('/static/audio/ambient.mp3');
+ambientTrack.loop = true; // Reproducción infinita
+ambientTrack.volume = 0.2; // Volumen suave (0.0 a 1.0)
+
 document.addEventListener('DOMContentLoaded', () => {
     if (typeof serverWorks !== 'undefined') {
         worksData = serverWorks;
@@ -87,7 +91,7 @@ function renderWorks(data) {
         const cardHtml = `
             <article class="bg-white rounded-2xl p-6 sm:p-7 border border-sepia-200 shadow-sm hover:shadow-md transition-all-custom flex flex-col justify-between group relative overflow-hidden">
                 ${work.featured ? '<div class="absolute top-0 right-0 w-16 h-16 pointer-events-none"><div class="absolute transform rotate-45 bg-accent-gold text-white text-[10px] font-bold py-1 right-[-35px] top-[18px] w-[120px] text-center shadow-sm">Destacado</div></div>' : ''}
-                
+
                 <div>
                     <div class="flex items-center justify-between gap-2 mb-4">
                         <span class="px-3 py-1 rounded-full text-xs font-semibold ${badgeBg} flex items-center gap-1.5">
@@ -311,36 +315,18 @@ function toggleAmbientAudio() {
     const btn = document.getElementById('btn-ambient-audio');
     const icon = document.getElementById('audio-icon');
 
-    if (!isAudioPlaying) {
-        try {
-            const AudioContext = window.AudioContext || window.webkitAudioContext;
-            audioContext = new AudioContext();
-            ambientOscillator = audioContext.createOscillator();
-            const gainNode = audioContext.createGain();
-
-            ambientOscillator.type = 'sine';
-            ambientOscillator.frequency.setValueAtTime(174, audioContext.currentTime);
-
-            gainNode.gain.setValueAtTime(0.01, audioContext.currentTime);
-            gainNode.gain.exponentialRampToValueAtTime(0.08, audioContext.currentTime + 3);
-
-            ambientOscillator.connect(gainNode);
-            gainNode.connect(audioContext.destination);
-
-            ambientOscillator.start();
+    if (ambientTrack.paused) {
+        ambientTrack.play().then(() => {
             isAudioPlaying = true;
-
             btn.classList.add('bg-accent-wine', 'text-white');
             btn.classList.remove('bg-sepia-100', 'text-sepia-800');
             icon.classList.remove('text-accent-wine');
             showToast('Música ambiental activada 🎵');
-        } catch (e) {
-            showToast('Audio no soportado en este navegador');
-        }
+        }).catch(() => {
+            showToast('El navegador bloqueó la reproducción automática');
+        });
     } else {
-        if (ambientOscillator) {
-            ambientOscillator.stop();
-        }
+        ambientTrack.pause();
         isAudioPlaying = false;
         btn.classList.remove('bg-accent-wine', 'text-white');
         btn.classList.add('bg-sepia-100', 'text-sepia-800');
