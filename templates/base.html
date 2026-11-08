@@ -1,15 +1,18 @@
 <!DOCTYPE html>
 <html lang="es" class="scroll-smooth">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}Susurros de Papel | Poemas y Cuentos{% endblock %}</title>
+    <title>{% block title %}Habitaciones huérfanas | Poemas, cuentos y otras formas de mirar.{% endblock %}</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600&family=Lora:ital,wght@0,400;0,600;1,400;1,600&family=Playfair+Display:ital,wght@0,500;0,700;0,800;1,400&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Caveat:wght@600&family=Lora:ital,wght@0,400;0,600;1,400;1,600&family=Playfair+Display:ital,wght@0,500;0,700;0,800;1,400&display=swap"
+        rel="stylesheet">
     <!-- FontAwesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
@@ -64,20 +67,24 @@
         }
     </style>
 </head>
+
 <body class="paper-texture min-h-screen flex flex-col selection:bg-accent-wine selection:text-white">
 
     <!-- Header / Navegación -->
     <header class="sticky top-0 z-30 bg-sepia-50/90 backdrop-blur-md border-b border-sepia-200 transition-all">
         <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
             <a href="/" class="flex items-center space-x-3 group">
-                <span class="text-3xl text-accent-wine font-title font-bold group-hover:rotate-12 transition-transform duration-300">
+                <span
+                    class="text-3xl text-accent-wine font-title font-bold group-hover:rotate-12 transition-transform duration-300">
                     <i class="fa-solid font-normal fa-feather-pointed"></i>
                 </span>
                 <div>
-                    <h1 class="font-title text-2xl font-bold tracking-tight text-sepia-900 group-hover:text-accent-wine transition-colors">
-                        Susurros de Papel
+                    <h1
+                        class="font-title text-2xl font-bold tracking-tight text-sepia-900 group-hover:text-accent-wine transition-colors">
+                        Habitaciones huérfanas
                     </h1>
-                    <p class="text-xs font-handwriting text-sepia-700 -mt-1 tracking-wider">Antología Personal & Cuentos</p>
+                    <p class="text-xs font-handwriting text-sepia-700 -mt-1 tracking-wider">Antología Personal & Cuentos
+                    </p>
                 </div>
             </a>
 
@@ -87,52 +94,62 @@
                 <a href="/#sobre-mi" class="hover:text-accent-wine transition-colors">Sobre mí</a>
                 <a href="/#contacto" class="hover:text-accent-wine transition-colors">Contacto</a>
                 {% if session.get('is_admin') %}
-                    <a href="/admin" class="px-3 py-1.5 rounded-full bg-accent-wine text-white text-xs hover:bg-sepia-900 transition-colors flex items-center gap-1.5">
-                        <i class="fa-solid fa-user-gear"></i> Panel Admin
-                    </a>
-                    <a href="/logout" class="text-xs text-sepia-700 hover:text-accent-wine transition-colors">Salir</a>
+                <a href="/admin"
+                    class="px-3 py-1.5 rounded-full bg-accent-wine text-white text-xs hover:bg-sepia-900 transition-colors flex items-center gap-1.5">
+                    <i class="fa-solid fa-user-gear"></i> Panel Admin
+                </a>
+                <a href="/logout" class="text-xs text-sepia-700 hover:text-accent-wine transition-colors">Salir</a>
                 {% else %}
-                    <a href="/login" class="text-xs text-sepia-700 hover:text-accent-wine transition-colors"><i class="fa-solid fa-lock text-xs mr-1"></i>Acceso Autor</a>
+                <a href="/login" class="text-xs text-sepia-700 hover:text-accent-wine transition-colors"><i
+                        class="fa-solid fa-lock text-xs mr-1"></i>Acceso Autor</a>
                 {% endif %}
             </nav>
 
             <div class="flex items-center space-x-4">
-                <button id="btn-ambient-audio" onclick="toggleAmbientAudio()" title="Música ambiental para leer" class="p-2.5 rounded-full bg-sepia-100 hover:bg-sepia-200 text-sepia-800 border border-sepia-300 transition-colors flex items-center gap-2 text-xs">
+                <button id="btn-ambient-audio" onclick="toggleAmbientAudio()" title="Música ambiental para leer"
+                    class="p-2.5 rounded-full bg-sepia-100 hover:bg-sepia-200 text-sepia-800 border border-sepia-300 transition-colors flex items-center gap-2 text-xs">
                     <i id="audio-icon" class="fa-solid fa-music text-accent-wine"></i>
                     <span class="hidden sm:inline font-sans">Ambiente</span>
                 </button>
 
-                <button onclick="toggleMobileMenu()" class="md:hidden p-2 rounded-lg text-sepia-800 hover:bg-sepia-200 focus:outline-none">
+                <button onclick="toggleMobileMenu()"
+                    class="md:hidden p-2 rounded-lg text-sepia-800 hover:bg-sepia-200 focus:outline-none">
                     <i class="fa-solid fa-bars text-xl"></i>
                 </button>
             </div>
         </div>
 
-        <div id="mobile-menu" class="hidden md:hidden bg-sepia-100 border-b border-sepia-300 px-4 pt-2 pb-4 space-y-2 text-center">
-            <a href="/#inicio" onclick="toggleMobileMenu()" class="block py-2 text-sepia-800 font-medium hover:text-accent-wine">Inicio</a>
-            <a href="/#obras" onclick="toggleMobileMenu()" class="block py-2 text-sepia-800 font-medium hover:text-accent-wine">Mis Escritos</a>
-            <a href="/#sobre-mi" onclick="toggleMobileMenu()" class="block py-2 text-sepia-800 font-medium hover:text-accent-wine">Sobre mí</a>
-            <a href="/#contacto" onclick="toggleMobileMenu()" class="block py-2 text-sepia-800 font-medium hover:text-accent-wine">Contacto</a>
+        <div id="mobile-menu"
+            class="hidden md:hidden bg-sepia-100 border-b border-sepia-300 px-4 pt-2 pb-4 space-y-2 text-center">
+            <a href="/#inicio" onclick="toggleMobileMenu()"
+                class="block py-2 text-sepia-800 font-medium hover:text-accent-wine">Inicio</a>
+            <a href="/#obras" onclick="toggleMobileMenu()"
+                class="block py-2 text-sepia-800 font-medium hover:text-accent-wine">Mis Escritos</a>
+            <a href="/#sobre-mi" onclick="toggleMobileMenu()"
+                class="block py-2 text-sepia-800 font-medium hover:text-accent-wine">Sobre mí</a>
+            <a href="/#contacto" onclick="toggleMobileMenu()"
+                class="block py-2 text-sepia-800 font-medium hover:text-accent-wine">Contacto</a>
             {% if session.get('is_admin') %}
-                <a href="/admin" onclick="toggleMobileMenu()" class="block py-2 text-accent-wine font-bold">Panel Admin</a>
-                <a href="/logout" onclick="toggleMobileMenu()" class="block py-2 text-sepia-700">Cerrar Sesión</a>
+            <a href="/admin" onclick="toggleMobileMenu()" class="block py-2 text-accent-wine font-bold">Panel Admin</a>
+            <a href="/logout" onclick="toggleMobileMenu()" class="block py-2 text-sepia-700">Cerrar Sesión</a>
             {% else %}
-                <a href="/login" onclick="toggleMobileMenu()" class="block py-2 text-sepia-700">Acceso Autor</a>
+            <a href="/login" onclick="toggleMobileMenu()" class="block py-2 text-sepia-700">Acceso Autor</a>
             {% endif %}
         </div>
     </header>
 
     <!-- Flashed Messages -->
     {% with messages = get_flashed_messages(with_categories=true) %}
-      {% if messages %}
-        <div class="max-w-4xl mx-auto px-4 mt-4 w-full">
-          {% for category, message in messages %}
-            <div class="p-4 rounded-xl text-sm font-medium mb-2 {% if category == 'error' %}bg-rose-100 text-rose-800 border border-rose-200{% elif category == 'success' %}bg-emerald-100 text-emerald-800 border border-emerald-200{% else %}bg-sepia-200 text-sepia-800 border border-sepia-300{% endif %} flex justify-between items-center">
-                <span>{{ message }}</span>
-            </div>
-          {% endfor %}
+    {% if messages %}
+    <div class="max-w-4xl mx-auto px-4 mt-4 w-full">
+        {% for category, message in messages %}
+        <div
+            class="p-4 rounded-xl text-sm font-medium mb-2 {% if category == 'error' %}bg-rose-100 text-rose-800 border border-rose-200{% elif category == 'success' %}bg-emerald-100 text-emerald-800 border border-emerald-200{% else %}bg-sepia-200 text-sepia-800 border border-sepia-300{% endif %} flex justify-between items-center">
+            <span>{{ message }}</span>
         </div>
-      {% endif %}
+        {% endfor %}
+    </div>
+    {% endif %}
     {% endwith %}
 
     {% block content %}{% endblock %}
@@ -140,36 +157,46 @@
     <!-- Footer -->
     <footer class="mt-auto border-t border-sepia-200 bg-sepia-100 py-8 text-center text-xs text-sepia-700">
         <div class="max-w-6xl mx-auto px-4 flex flex-col sm:flex-row justify-between items-center gap-4">
-            <p>© 2026 Susurros de Papel. Todos los derechos reservados.</p>
+            <p>© 2026 Habitaciones huérfanas. Todos los derechos reservados.</p>
             <p class="font-handwriting text-lg text-sepia-800">Hecho con tinta y devoción.</p>
         </div>
     </footer>
 
     <!-- MODAL DE LECTURA -->
-    <div id="reader-modal" class="fixed inset-0 z-50 hidden bg-sepia-900/60 backdrop-blur-sm flex items-center justify-center p-3 sm:p-6 overflow-y-auto">
-        <div class="bg-sepia-50 border border-sepia-300 w-full max-w-2xl rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh] my-auto animate-fade-in relative">
-            
+    <div id="reader-modal"
+        class="fixed inset-0 z-50 hidden bg-sepia-900/60 backdrop-blur-sm flex items-center justify-center p-3 sm:p-6 overflow-y-auto">
+        <div
+            class="bg-sepia-50 border border-sepia-300 w-full max-w-2xl rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh] my-auto animate-fade-in relative">
+
             <div class="px-6 py-4 border-b border-sepia-200 flex items-center justify-between bg-sepia-100/50">
                 <div class="flex items-center space-x-2">
-                    <span id="modal-badge" class="px-2.5 py-0.5 rounded-full text-xs font-semibold uppercase bg-sepia-200 text-sepia-800">
+                    <span id="modal-badge"
+                        class="px-2.5 py-0.5 rounded-full text-xs font-semibold uppercase bg-sepia-200 text-sepia-800">
                         Poema
                     </span>
                     <span id="modal-read-time" class="text-xs text-sepia-700 flex items-center gap-1">
                         <i class="fa-regular fa-clock"></i> 2 min
                     </span>
                 </div>
-                
+
                 <div class="flex items-center space-x-3">
                     <div class="flex items-center bg-sepia-200/60 rounded-lg p-1 text-xs">
-                        <button onclick="changeFontSize(-1)" class="px-2 py-1 hover:bg-white rounded transition-colors text-sepia-800" title="Disminuir fuente">A-</button>
-                        <button onclick="changeFontSize(1)" class="px-2 py-1 hover:bg-white rounded transition-colors text-sepia-800 font-bold" title="Aumentar fuente">A+</button>
+                        <button onclick="changeFontSize(-1)"
+                            class="px-2 py-1 hover:bg-white rounded transition-colors text-sepia-800"
+                            title="Disminuir fuente">A-</button>
+                        <button onclick="changeFontSize(1)"
+                            class="px-2 py-1 hover:bg-white rounded transition-colors text-sepia-800 font-bold"
+                            title="Aumentar fuente">A+</button>
                     </div>
 
-                    <button onclick="toggleBookmark()" id="modal-bookmark-btn" class="text-sepia-700 hover:text-accent-wine transition-colors p-1" title="Guardar en favoritos">
+                    <button onclick="toggleBookmark()" id="modal-bookmark-btn"
+                        class="text-sepia-700 hover:text-accent-wine transition-colors p-1"
+                        title="Guardar en favoritos">
                         <i class="fa-regular fa-bookmark text-lg"></i>
                     </button>
 
-                    <button onclick="closeReader()" class="text-sepia-700 hover:text-accent-wine transition-colors p-1" title="Cerrar lectura">
+                    <button onclick="closeReader()" class="text-sepia-700 hover:text-accent-wine transition-colors p-1"
+                        title="Cerrar lectura">
                         <i class="fa-solid fa-xmark text-xl"></i>
                     </button>
                 </div>
@@ -188,18 +215,23 @@
                     </p>
                 </div>
 
-                <div id="modal-content" class="text-sepia-900 leading-relaxed font-body transition-all text-base sm:text-lg">
+                <div id="modal-content"
+                    class="text-sepia-900 leading-relaxed font-body transition-all text-base sm:text-lg">
                 </div>
 
-                <div class="pt-8 border-t border-sepia-200 flex flex-col sm:flex-row items-center justify-between gap-4">
-                    <button id="like-btn" onclick="handleLike()" class="flex items-center space-x-2 text-xs font-semibold px-4 py-2 rounded-full border border-sepia-300 hover:border-accent-wine hover:text-accent-wine transition-colors">
+                <div
+                    class="pt-8 border-t border-sepia-200 flex flex-col sm:flex-row items-center justify-between gap-4">
+                    <button id="like-btn" onclick="handleLike()"
+                        class="flex items-center space-x-2 text-xs font-semibold px-4 py-2 rounded-full border border-sepia-300 hover:border-accent-wine hover:text-accent-wine transition-colors">
                         <i class="fa-regular fa-heart text-accent-wine text-sm" id="like-icon"></i>
                         <span>Me inspiró (<span id="modal-likes">0</span>)</span>
                     </button>
 
                     <div class="flex items-center space-x-2 text-xs text-sepia-700">
                         <span>Compartir:</span>
-                        <button onclick="copyWorkLink()" class="p-2 rounded-full bg-sepia-200 hover:bg-sepia-300 transition-colors" title="Copiar enlace">
+                        <button onclick="copyWorkLink()"
+                            class="p-2 rounded-full bg-sepia-200 hover:bg-sepia-300 transition-colors"
+                            title="Copiar enlace">
                             <i class="fa-solid fa-link"></i>
                         </button>
                     </div>
@@ -209,7 +241,8 @@
     </div>
 
     <!-- Toast Notification -->
-    <div id="toast" class="fixed bottom-5 right-5 z-50 bg-sepia-900 text-sepia-50 px-4 py-3 rounded-xl shadow-xl text-xs font-medium flex items-center space-x-2 translate-y-20 opacity-0 transition-all duration-300">
+    <div id="toast"
+        class="fixed bottom-5 right-5 z-50 bg-sepia-900 text-sepia-50 px-4 py-3 rounded-xl shadow-xl text-xs font-medium flex items-center space-x-2 translate-y-20 opacity-0 transition-all duration-300">
         <i class="fa-solid fa-check text-accent-gold"></i>
         <span id="toast-message">Mensaje de notificación</span>
     </div>
@@ -217,4 +250,5 @@
     <script src="{{ url_for('static', filename='js/main.js') }}"></script>
     {% block scripts %}{% endblock %}
 </body>
+
 </html>
