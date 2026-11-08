@@ -1,7 +1,7 @@
 import os
 from functools import wraps
 from flask import Flask, render_template, request, jsonify, redirect, url_for, session, flash
-from models import db, Work, User
+from models import db, Work, User, Subscriber
 from config import Config
 
 def admin_required(f):
@@ -55,7 +55,8 @@ def create_app():
     @admin_required
     def admin_dashboard():
         works = Work.query.order_by(Work.created_at.desc()).all()
-        return render_template('admin_dashboard.html', works=works)
+        subscribers = Subscriber.query.order_by(Subscriber.created_at.desc()).all()
+        return render_template('admin_dashboard.html', works=works, subscribers=subscribers)
 
     @app.route('/admin/create', methods=['GET', 'POST'])
     @admin_required
@@ -143,23 +144,23 @@ def create_app():
         db.session.commit()
         return jsonify({'success': True, 'likes': work.likes})
 
+    @app.route('/api/subscribe', methods=['POST'])
+    def subscribe():
+        data = request.get_json() or {}
+        email = data.get('email', '').strip().lower()
+
+        if not email or '@' not in email:
+            return jsonify({'success': False, 'message': 'Correo inválido'}), 400
+
+        existing = Subscriber.query.filter_by(email=email).first()
+        if not existing:
+            new_sub = Subscriber(email=email)
+            db.session.add(new_sub)
+            db.session.commit()
+
+        return jsonify({'success': True})
+
     return app
-
-@app.route('/api/subscribe', methods=['POST'])
-def subscribe():
-    data = request.get_json() or {}
-    email = data.get('email', '').strip().lower()
-
-    if not email or '@' not in email:
-        return jsonify({'success': False, 'message': 'Correo inválido'}), 400
-
-    existing = Subscriber.query.filter_by(email=email).first()
-    if not existing:
-        new_sub = Subscriber(email=email)
-        db.session.add(new_sub)
-        db.session.commit()
-
-    return jsonify({'success': True})
 
 app = create_app()
 
