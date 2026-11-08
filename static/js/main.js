@@ -27,17 +27,18 @@ document.addEventListener('DOMContentLoaded', () => {
 function updateCounts() {
     const elTodos = document.getElementById('count-todos');
     if (!elTodos) return;
-    
+
     const favorites = JSON.parse(localStorage.getItem('my_literary_favorites') || '[]');
-    
+    const validFavCount = worksData.filter(w => favorites.includes(String(w.id))).length;
+
     elTodos.innerText = worksData.length;
     document.getElementById('count-poema').innerText = worksData.filter(w => w.type === 'poema').length;
     document.getElementById('count-cuento').innerText = worksData.filter(w => w.type === 'cuento').length;
     document.getElementById('count-reflexion').innerText = worksData.filter(w => w.type === 'reflexion').length;
-    
+
     const countFav = document.getElementById('count-favoritos');
     if (countFav) {
-        countFav.innerText = favorites.length;
+        countFav.innerText = validFavCount;
     }
 }
 
@@ -156,10 +157,10 @@ function applyFiltersAndSort() {
         } else {
             matchesType = item.type === currentFilter;
         }
-        
-        const matchesQuery = item.title.toLowerCase().includes(query) || 
-                            item.excerpt.toLowerCase().includes(query) ||
-                            item.content.toLowerCase().includes(query);
+
+        const matchesQuery = item.title.toLowerCase().includes(query) ||
+            item.excerpt.toLowerCase().includes(query) ||
+            item.content.toLowerCase().includes(query);
         return matchesType && matchesQuery;
     });
 
@@ -237,7 +238,7 @@ function handleLike() {
                 if (work) work.likes = data.likes;
                 document.getElementById('modal-likes').innerText = data.likes;
                 showToast('¡Gracias por hacer eco de este poema!');
-                
+
                 const icon = document.getElementById('like-icon');
                 icon.classList.remove('fa-regular');
                 icon.classList.add('fa-solid', 'animate-ping');
@@ -248,7 +249,7 @@ function handleLike() {
 
 function toggleBookmark() {
     if (!currentWorkId) return;
-    
+
     let favorites = JSON.parse(localStorage.getItem('my_literary_favorites') || '[]');
     const btn = document.getElementById('modal-bookmark-btn');
     const icon = btn.querySelector('i');
@@ -308,7 +309,7 @@ function toggleAmbientAudio() {
             btn.classList.remove('bg-sepia-100', 'text-sepia-800');
             icon.classList.remove('text-accent-wine');
             showToast('Música ambiental activada 🎵');
-        } catch(e) {
+        } catch (e) {
             showToast('Audio no soportado en este navegador');
         }
     } else {
@@ -342,7 +343,7 @@ function showToast(message) {
     const toast = document.getElementById('toast');
     document.getElementById('toast-message').innerText = message;
     toast.classList.remove('translate-y-20', 'opacity-0');
-    
+
     setTimeout(() => {
         toast.classList.add('translate-y-20', 'opacity-0');
     }, 3000);
