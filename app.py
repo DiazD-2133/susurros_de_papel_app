@@ -134,8 +134,15 @@ def create_app():
 
     @app.route('/api/works')
     def api_works():
-        works = Work.query.order_by(Work.created_at.desc()).all()
-        return jsonify([w.to_dict() for w in works])
+        page = request.args.get('page', 1, type=int)
+        # Carga solo 9 obras por página
+        pagination = Work.query.order_by(Work.created_at.desc()).paginate(page=page, per_page=9, error_out=False)
+        
+        return jsonify({
+            'works': [w.to_dict() for w in pagination.items],
+            'total_pages': pagination.pages,
+            'current_page': page
+        })
 
     @app.route('/api/works/<int:work_id>/like', methods=['POST'])
     def like_work(work_id):
