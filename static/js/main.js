@@ -138,6 +138,24 @@ function applyFiltersAndSort() {
     const query = searchInput.value.toLowerCase();
     const sortBy = sortSelect.value;
 
+    const favorites = JSON.parse(localStorage.getItem('my_literary_favorites') || '[]');
+
+    let filtered = worksData.filter(item => {
+        let matchesType = false;
+        if (currentFilter === 'todos') {
+            matchesType = true;
+        } else if (currentFilter === 'favoritos') {
+            matchesType = favorites.includes(String(item.id));
+        } else {
+            matchesType = item.type === currentFilter;
+        }
+        
+        const matchesQuery = item.title.toLowerCase().includes(query) || 
+                            item.excerpt.toLowerCase().includes(query) ||
+                            item.content.toLowerCase().includes(query);
+        return matchesType && matchesQuery;
+    });
+
     let filtered = worksData.filter(item => {
         const matchesType = currentFilter === 'todos' || item.type === currentFilter;
         const matchesQuery = item.title.toLowerCase().includes(query) || 
@@ -157,6 +175,10 @@ function applyFiltersAndSort() {
 
 function openReader(id) {
     const work = worksData.find(w => String(w.id) === String(id));
+    const favorites = JSON.parse(localStorage.getItem('my_literary_favorites') || '[]');
+    const bookmarkBtn = document.getElementById('modal-bookmark-btn');
+    const bookmarkIcon = bookmarkBtn.querySelector('i');
+
     if (!work) return;
 
     currentWorkId = id;
@@ -174,6 +196,13 @@ function openReader(id) {
     } else {
         contentContainer.className = "space-y-4 text-justify font-body leading-relaxed";
         contentContainer.innerHTML = work.content.split('\n\n').map(p => `<p>${p}</p>`).join('');
+    }
+
+    /* favoritos */
+    if (favorites.includes(String(id))) {
+    bookmarkIcon.className = "fa-solid fa-bookmark text-lg text-accent-wine";
+    } else {
+        bookmarkIcon.className = "fa-regular fa-bookmark text-lg";
     }
 
     document.getElementById('reader-modal').classList.remove('hidden');
