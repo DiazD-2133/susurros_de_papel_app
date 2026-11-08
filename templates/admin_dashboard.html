@@ -9,7 +9,8 @@
             <h2 class="font-title text-3xl font-bold text-sepia-900">Panel de Control del Autor</h2>
             <p class="text-sepia-700 text-sm">Administra, edita o elimina las publicaciones existentes.</p>
         </div>
-        <a href="{{ url_for('create_work') }}" class="px-5 py-2.5 bg-accent-wine hover:bg-sepia-900 text-white text-sm font-medium rounded-xl transition-colors shadow-sm flex items-center justify-center gap-2 self-start sm:self-auto">
+        <a href="{{ url_for('create_work') }}"
+            class="px-5 py-2.5 bg-accent-wine hover:bg-sepia-900 text-white text-sm font-medium rounded-xl transition-colors shadow-sm flex items-center justify-center gap-2 self-start sm:self-auto">
             <i class="fa-solid fa-plus"></i> Publicar Nueva Obra
         </a>
     </div>
@@ -17,7 +18,8 @@
     <div class="bg-white rounded-2xl border border-sepia-200 overflow-hidden shadow-sm">
         <div class="overflow-x-auto">
             <table class="w-full text-left text-sm text-sepia-800">
-                <thead class="bg-sepia-100 text-sepia-900 font-title text-xs uppercase tracking-wider border-b border-sepia-200">
+                <thead
+                    class="bg-sepia-100 text-sepia-900 font-title text-xs uppercase tracking-wider border-b border-sepia-200">
                     <tr>
                         <th class="px-6 py-4">Título</th>
                         <th class="px-6 py-4">Tipo</th>
@@ -45,14 +47,18 @@
                             {{ work.created_at.strftime('%d %b %Y') }}
                         </td>
                         <td class="px-6 py-4 text-center text-xs font-semibold">
-                            <span class="text-accent-wine"><i class="fa-solid fa-heart mr-1 text-[10px]"></i>{{ work.likes }}</span>
+                            <span class="text-accent-wine"><i class="fa-solid fa-heart mr-1 text-[10px]"></i>{{
+                                work.likes }}</span>
                         </td>
                         <td class="px-6 py-4 text-right space-x-2">
-                            <a href="{{ url_for('edit_work', work_id=work.id) }}" class="inline-flex items-center px-3 py-1.5 rounded-lg border border-sepia-300 text-xs font-medium text-sepia-800 hover:bg-sepia-200 transition-colors">
+                            <a href="{{ url_for('edit_work', work_id=work.id) }}"
+                                class="inline-flex items-center px-3 py-1.5 rounded-lg border border-sepia-300 text-xs font-medium text-sepia-800 hover:bg-sepia-200 transition-colors">
                                 <i class="fa-solid fa-pen-to-square mr-1 text-[11px]"></i> Editar
                             </a>
-                            <form action="{{ url_for('delete_work', work_id=work.id) }}" method="POST" class="inline" onsubmit="return confirm('¿Seguro que deseas eliminar este texto? Esta acción no se puede deshacer.');">
-                                <button type="submit" class="inline-flex items-center px-3 py-1.5 rounded-lg bg-rose-50 text-rose-700 border border-rose-200 text-xs font-medium hover:bg-rose-100 transition-colors">
+                            <form action="{{ url_for('delete_work', work_id=work.id) }}" method="POST" class="inline"
+                                onsubmit="return confirm('¿Seguro que deseas eliminar este texto? Esta acción no se puede deshacer.');">
+                                <button type="submit"
+                                    class="inline-flex items-center px-3 py-1.5 rounded-lg bg-rose-50 text-rose-700 border border-rose-200 text-xs font-medium hover:bg-rose-100 transition-colors">
                                     <i class="fa-solid fa-trash mr-1 text-[11px]"></i> Eliminar
                                 </button>
                             </form>
@@ -70,4 +76,46 @@
         </div>
     </div>
 </main>
+
+<!-- Sección de Suscriptores -->
+<div class="mt-12">
+    <div class="mb-4">
+        <h3 class="font-title text-2xl font-bold text-sepia-900">
+            Suscriptores al Boletín ({{ subscribers|length }})
+        </h3>
+        <p class="text-sepia-700 text-sm">Correos registrados desde el formulario de contacto.</p>
+    </div>
+
+    <div class="bg-white rounded-2xl border border-sepia-200 overflow-hidden shadow-sm">
+        <div class="overflow-x-auto">
+            <table class="w-full text-left text-sm text-sepia-800">
+                <thead
+                    class="bg-sepia-100 text-sepia-900 font-title text-xs uppercase tracking-wider border-b border-sepia-200">
+                    <tr>
+                        <th class="px-6 py-4">Correo Electrónico</th>
+                        <th class="px-6 py-4 text-right">Fecha de Registro</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-sepia-100">
+                    {% for sub in subscribers %}
+                    <tr class="hover:bg-sepia-50/50 transition-colors">
+                        <td class="px-6 py-4 font-medium text-sepia-900">
+                            <i class="fa-regular fa-envelope text-accent-wine mr-2"></i>{{ sub.email }}
+                        </td>
+                        <td class="px-6 py-4 text-right text-xs text-sepia-700">
+                            {{ sub.created_at.strftime('%d %b %Y — %H:%M') }}
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="2" class="px-6 py-12 text-center text-sepia-700 italic">
+                            Aún no hay suscriptores registrados.
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
 {% endblock %}

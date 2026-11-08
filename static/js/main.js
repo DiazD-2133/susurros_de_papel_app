@@ -331,12 +331,30 @@ function toggleMobileMenu() {
 
 function handleSubscribe(e) {
     e.preventDefault();
-    const msg = document.getElementById('subscribe-message');
-    msg.classList.remove('hidden');
-    e.target.reset();
-    setTimeout(() => {
-        msg.classList.add('hidden');
-    }, 6000);
+    const input = e.target.querySelector('input[type="email"]');
+    const email = input ? input.value.trim() : '';
+
+    if (!email) return;
+
+    fetch('/api/subscribe', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: email })
+    })
+        .then(res => res.json())
+        .then(data => {
+            if (data.success) {
+                const msg = document.getElementById('subscribe-message');
+                msg.classList.remove('hidden');
+                e.target.reset();
+                setTimeout(() => {
+                    msg.classList.add('hidden');
+                }, 6000);
+            } else {
+                showToast(data.message || 'Error al procesar la suscripción');
+            }
+        })
+        .catch(() => showToast('Error de conexión al suscribir'));
 }
 
 function showToast(message) {

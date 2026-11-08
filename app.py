@@ -145,6 +145,22 @@ def create_app():
 
     return app
 
+@app.route('/api/subscribe', methods=['POST'])
+def subscribe():
+    data = request.get_json() or {}
+    email = data.get('email', '').strip().lower()
+
+    if not email or '@' not in email:
+        return jsonify({'success': False, 'message': 'Correo inválido'}), 400
+
+    existing = Subscriber.query.filter_by(email=email).first()
+    if not existing:
+        new_sub = Subscriber(email=email)
+        db.session.add(new_sub)
+        db.session.commit()
+
+    return jsonify({'success': True})
+
 app = create_app()
 
 if __name__ == '__main__':
