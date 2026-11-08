@@ -5,9 +5,9 @@ let isAudioPlaying = false;
 let audioContext = null;
 let ambientOscillator = null;
 
-let ambientTrack = new Audio('/static/audio/ambient.mp3');
-ambientTrack.loop = true; // Reproducción infinita
-ambientTrack.volume = 0.2; // Volumen suave (0.0 a 1.0)
+// Control de paginación
+let currentPage = 1;
+const itemsPerPage = 6; // Cambia este número para mostrar 6, 9 o 12 por página
 
 document.addEventListener('DOMContentLoaded', () => {
     if (typeof serverWorks !== 'undefined') {
@@ -19,14 +19,14 @@ document.addEventListener('DOMContentLoaded', () => {
             .then(data => {
                 worksData = data;
                 updateCounts();
-                renderWorks(worksData);
+                applyFiltersAndSort();
                 checkUrlParamAndOpen();
             });
     }
 
     if (worksData.length > 0) {
         updateCounts();
-        renderWorks(worksData);
+        applyFiltersAndSort();
     }
 });
 
@@ -64,12 +64,20 @@ function renderWorks(data) {
 
     if (data.length === 0) {
         noResults.classList.remove('hidden');
+        renderPagination(0);
         return;
     } else {
         noResults.classList.add('hidden');
     }
 
-    data.forEach(work => {
+    // Paginación: Recortar la lista de acuerdo a la página actual
+    const totalPages = Math.ceil(data.length / itemsPerPage);
+    if (currentPage > totalPages) currentPage = 1;
+
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    const paginatedItems = data.slice(startIndex, startIndex + itemsPerPage);
+
+    paginatedItems.forEach(work => {
         let iconClass = 'fa-scroll';
         let badgeBg = 'bg-amber-100 text-amber-900';
         if (work.type === 'cuento') {
@@ -91,7 +99,7 @@ function renderWorks(data) {
         const cardHtml = `
             <article class="bg-white rounded-2xl p-6 sm:p-7 border border-sepia-200 shadow-sm hover:shadow-md transition-all-custom flex flex-col justify-between group relative overflow-hidden">
                 ${work.featured ? '<div class="absolute top-0 right-0 w-16 h-16 pointer-events-none"><div class="absolute transform rotate-45 bg-accent-gold text-white text-[10px] font-bold py-1 right-[-35px] top-[18px] w-[120px] text-center shadow-sm">Destacado</div></div>' : ''}
-
+                
                 <div>
                     <div class="flex items-center justify-between gap-2 mb-4">
                         <span class="px-3 py-1 rounded-full text-xs font-semibold ${badgeBg} flex items-center gap-1.5">
@@ -127,10 +135,41 @@ function renderWorks(data) {
         `;
         grid.insertAdjacentHTML('beforeend', cardHtml);
     });
+
+    renderPagination(data.length);
+}
+
+function renderPagination(totalItems) {
+    const container = document.getElementById('pagination-container');
+    if (!container) return;
+
+    const totalPages = Math.ceil(totalItems / itemsPerPage);
+
+    if (totalPages <= 1) {
+        container.classList.add('hidden');
+        return;
+    }
+
+    container.classList.remove('hidden');
+    document.getElementById('page-info').innerText = `Página ${currentPage} de ${totalPages}`;
+
+    document.getElementById('btn-prev-page').disabled = (currentPage === 1);
+    document.getElementById('btn-next-page').disabled = (currentPage === totalPages);
+}
+
+function changePage(direction) {
+    currentPage += direction;
+    applyFiltersAndSort();
+
+    const worksSection = document.getElementById('obras');
+    if (worksSection) {
+        worksSection.scrollIntoView({ behavior: 'smooth' });
+    }
 }
 
 function setFilter(type, btnElement) {
     currentFilter = type;
+    currentPage = 1; // Reiniciar a la primera página al cambiar filtro
     const buttons = document.querySelectorAll('.filter-btn');
     buttons.forEach(btn => {
         btn.classList.remove('bg-accent-wine', 'text-white');
@@ -146,6 +185,7 @@ function setFilter(type, btnElement) {
 }
 
 function filterWorks() {
+    currentPage = 1; // Reiniciar a la primera página al buscar
     applyFiltersAndSort();
 }
 
@@ -212,7 +252,6 @@ function openReader(id) {
         contentContainer.innerHTML = work.content.split('\n\n').map(p => `<p>${p}</p>`).join('');
     }
 
-    /* Estado visual del marcapáginas */
     if (favorites.includes(String(id))) {
         bookmarkIcon.className = "fa-solid fa-bookmark text-lg text-accent-wine";
     } else {
@@ -289,7 +328,6 @@ function toggleBookmark() {
 function copyWorkLink() {
     if (!currentWorkId) return;
 
-    // Construir la URL directa a la obra actual
     const shareUrl = `${window.location.origin}/?obra=${currentWorkId}`;
 
     if (navigator.clipboard && navigator.clipboard.writeText) {
@@ -311,20 +349,31 @@ function fallbackCopy(text) {
     showToast('Enlace de la obra copiado al portapapeles 📋');
 }
 
+let ambientTrack = null;
+
 function toggleAmbientAudio() {
     const btn = document.getElementById('btn-ambient-audio');
     const icon = document.getElementById('audio-icon');
 
+    if (!ambientTrack) {
+        ambientTrack = new Audio('/static/audio/ambient.mp3');
+        ambientTrack.loop = true;
+        ambientTrack.volume = 0.4;
+    }
+
     if (ambientTrack.paused) {
-        ambientTrack.play().then(() => {
-            isAudioPlaying = true;
-            btn.classList.add('bg-accent-wine', 'text-white');
-            btn.classList.remove('bg-sepia-100', 'text-sepia-800');
-            icon.classList.remove('text-accent-wine');
-            showToast('Música ambiental activada 🎵');
-        }).catch(() => {
-            showToast('El navegador bloqueó la reproducción automática');
-        });
+        ambientTrack.play()
+            .then(() => {
+                isAudioPlaying = true;
+                btn.classList.add('bg-accent-wine', 'text-white');
+                btn.classList.remove('bg-sepia-100', 'text-sepia-800');
+                icon.classList.remove('text-accent-wine');
+                showToast('Música ambiental activada 🎵');
+            })
+            .catch((error) => {
+                console.error('Error de audio:', error);
+                showToast('No se encontró o no se pudo cargar el archivo MP3');
+            });
     } else {
         ambientTrack.pause();
         isAudioPlaying = false;
