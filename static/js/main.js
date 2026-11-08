@@ -8,6 +8,7 @@ let ambientOscillator = null;
 document.addEventListener('DOMContentLoaded', () => {
     if (typeof serverWorks !== 'undefined') {
         worksData = serverWorks;
+        checkUrlParamAndOpen();
     } else {
         fetch('/api/works')
             .then(res => res.json())
@@ -15,6 +16,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 worksData = data;
                 updateCounts();
                 renderWorks(worksData);
+                checkUrlParamAndOpen();
             });
     }
 
@@ -23,6 +25,14 @@ document.addEventListener('DOMContentLoaded', () => {
         renderWorks(worksData);
     }
 });
+
+function checkUrlParamAndOpen() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const workId = urlParams.get('obra');
+    if (workId) {
+        openReader(workId);
+    }
+}
 
 function updateCounts() {
     const elTodos = document.getElementById('count-todos');
@@ -273,13 +283,28 @@ function toggleBookmark() {
 }
 
 function copyWorkLink() {
+    if (!currentWorkId) return;
+
+    // Construir la URL directa a la obra actual
+    const shareUrl = `${window.location.origin}/?obra=${currentWorkId}`;
+
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(shareUrl).then(() => {
+            showToast('Enlace de la obra copiado al portapapeles 📋');
+        }).catch(() => fallbackCopy(shareUrl));
+    } else {
+        fallbackCopy(shareUrl);
+    }
+}
+
+function fallbackCopy(text) {
     const dummy = document.createElement('input');
     document.body.appendChild(dummy);
-    dummy.value = window.location.href;
+    dummy.value = text;
     dummy.select();
     document.execCommand('copy');
     document.body.removeChild(dummy);
-    showToast('Enlace copiado al portapapeles');
+    showToast('Enlace de la obra copiado al portapapeles 📋');
 }
 
 function toggleAmbientAudio() {
